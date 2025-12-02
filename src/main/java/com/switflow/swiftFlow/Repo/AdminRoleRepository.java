@@ -1,0 +1,11 @@
+package com.switflow.swiftFlow.Repo;
+
+import com.switflow.swiftFlow.Entity.AdminRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+
+@Repository
+public interface AdminRoleRepository extends JpaRepository<AdminRole, Long> {
+    Optional<AdminRole> findByUserId(Long userId);
+}
