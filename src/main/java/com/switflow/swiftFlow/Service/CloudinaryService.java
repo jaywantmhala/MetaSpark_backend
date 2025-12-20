@@ -20,6 +20,11 @@ public class CloudinaryService {
         return (String) uploadResult.get("secure_url");
     }
 
+    public String uploadBytes(byte[] bytes) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
+        return (String) uploadResult.get("secure_url");
+    }
+
     public void deleteFile(String publicId) throws IOException {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }

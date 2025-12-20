@@ -69,6 +69,39 @@ public class StatusService {
         return response;
     }
 
+    public StatusResponse createFilteredPdfStatus(long orderId, String filteredPdfUrl, Department targetDepartment) {
+        Orders order = this.orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
+
+        Status status = new Status();
+        status.setOldStatus(order.getDepartment());
+        status.setNewStatus(targetDepartment);
+        status.setComment("Filtered PDF generated for " + targetDepartment.name());
+        status.setPercentage(null);
+        status.setAttachmentUrl(filteredPdfUrl);
+        status.setOrders(order);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        status.setCreatedAt(LocalDate.now().format(formatter));
+
+        Status savedStatus = statusRepository.save(status);
+
+        order.setDepartment(targetDepartment);
+        orderRepository.save(order);
+
+        StatusResponse response = new StatusResponse();
+        response.setId(savedStatus.getId());
+        response.setNewStatus(savedStatus.getNewStatus());
+        response.setOldStatus(savedStatus.getOldStatus());
+        response.setComment(savedStatus.getComment());
+        response.setAttachmentUrl(savedStatus.getAttachmentUrl());
+        response.setOrderId(savedStatus.getOrders().getOrderId());
+        response.setPercentage(savedStatus.getPercentage());
+        response.setCreatedAt(savedStatus.getCreatedAt());
+
+        return response;
+    }
+
     public StatusResponse createStatus(StatusRequest statusRequest, long orderId, MultipartFile attachment) throws IOException {
         // Upload attachment to Cloudinary if provided
         if (attachment != null && !attachment.isEmpty()) {
